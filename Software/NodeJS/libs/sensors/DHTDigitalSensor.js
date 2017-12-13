@@ -80,7 +80,10 @@ DHTDigitalSensor.prototype.read = function() {
 
       var heatIndex = +(Number(parseFloat(getHeatIndex(temp, hum, this.scale)).toFixed(2)))
       // From: https://github.com/adafruit/DHT-sensor-library/blob/master/DHT.cpp
-
+      // sanity check
+      if ( temp > 1000 || hum > 1000){
+        return false;
+      }
       return [temp, hum, heatIndex]
     } else
       return false
