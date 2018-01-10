@@ -3,7 +3,7 @@ var fs = require('fs');
 
 var sleep = require('sleep');
 var extend = require('extend');
-var I2CSensor = require('./base/i2cSensor');
+var I2CSensor = require('../sensors/base/i2cSensor');
 var async = require('async');
 const DRIVER_ADDR = 0x0f;
 
