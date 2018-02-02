@@ -31,6 +31,6 @@ module.exports.GrovePi = {
     , AirAlcoholAnalog: require('./sensors/airAlcoholAnalogSensor')
   }
   , actuators: {
-    MotorDriver13I2CActuator: require('./actuators/motorDriver13I2CActuator')
+    MotorDriver13I2CActuator: require('./actuators/motorDriver13I2cActuator')
   }
 }
