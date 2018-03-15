@@ -64,11 +64,30 @@ function I2CMotorDriver( i2cAddress ){
   drv.i2c1 = i2cBus.openSync(busNumber);
 
   //Hardware
+
+  drv.setMotors = function( newMotors ){
+    motors = newMotors;
+    var toDo;
+    if (motors[MOTOR1].direction == 1 && motors[MOTOR2].direction == 1) {
+      toDo = function(cb, result) {drv.i2c1.writeByteSync(drv.address, DirectionSet, BothClockWise);cb()};
+    } else if (motors[MOTOR1].direction == 1 && motors[MOTOR2].direction == -1) {
+      toDo = function(cb) {drv.i2c1.writeByteSync(drv.address, DirectionSet, M1CWM2ACW);cb()};
+    } else if (motors[MOTOR1].direction == -1 && motors[MOTOR2].direction == 1) {
+      toDo = function(cb) {drv.i2c1.writeByteSync(drv.address, DirectionSet, M1ACWM2CW);cb()};
+    } else if (motors[MOTOR1].direction == -1 && motors[MOTOR2].direction == -1) {
+      toDo = function(cb) {drv.i2c1.writeByteSync(drv.address, DirectionSet, BothAntiClockWise);cb()};
+    }
+    async.retry({times: 3, interval: 200}, toDo, function(err, result) {
+      sleep.usleep(100000);
+    });
+  };
+
+  drv.send = drv.setMotors;
+
   drv.setDirection = function(channelNr, direction) {
     if ( channelNr != MOTOR1 && channelNr != MOTOR2 ){
       return;
     }
-
 
     motors[channelNr].direction = direction;
 
@@ -95,7 +114,6 @@ function I2CMotorDriver( i2cAddress ){
       sleep.usleep(100000);
     });
 
-
   };
 
   drv.setDirection(MOTOR1,1);
@@ -105,24 +123,7 @@ function I2CMotorDriver( i2cAddress ){
     return motors;
   };
 
-  drv.setMotors = function( newMotors ){
-    motors = newMotors;
-    var toDo;
-    if (motors[MOTOR1].direction == 1 && motors[MOTOR2].direction == 1) {
-      toDo = function(cb, result) {drv.i2c1.writeByteSync(drv.address, DirectionSet, BothClockWise);cb()};
-    } else if (motors[MOTOR1].direction == 1 && motors[MOTOR2].direction == -1) {
-      toDo = function(cb) {drv.i2c1.writeByteSync(drv.address, DirectionSet, M1CWM2ACW);cb()};
-    } else if (motors[MOTOR1].direction == -1 && motors[MOTOR2].direction == 1) {
-      toDo = function(cb) {drv.i2c1.writeByteSync(drv.address, DirectionSet, M1ACWM2CW);cb()};
-    } else if (motors[MOTOR1].direction == -1 && motors[MOTOR2].direction == -1) {
-      toDo = function(cb) {drv.i2c1.writeByteSync(drv.address, DirectionSet, BothAntiClockWise);cb()};
-    }
-    async.retry({times: 3, interval: 200}, toDo, function(err, result) {
-      sleep.usleep(100000);
-    });
-  };
 
-  drv.send = drv.setMotors;
 }
 
 I2CMotorDriver.prototype = new I2CSensor();
