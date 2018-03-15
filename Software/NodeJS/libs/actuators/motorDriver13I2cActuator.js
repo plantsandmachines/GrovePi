@@ -67,6 +67,7 @@ function I2CMotorDriver( i2cAddress ){
 
   drv.setMotors = function( newMotors ){
     motors = newMotors;
+    console.log( 'setting motors!', newMotors);
     var toDo;
     if (motors[MOTOR1].direction == 1 && motors[MOTOR2].direction == 1) {
       toDo = function(cb, result) {drv.i2c1.writeByteSync(drv.address, DirectionSet, BothClockWise);cb()};
