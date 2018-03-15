@@ -74,19 +74,7 @@ function I2CMotorDriver( i2cAddress ){
 
     console.log(' got correct motor, actually publishing');
 
-    var toDo;
-    if (motors[MOTOR1].direction == 1 && motors[MOTOR2].direction == 1) {
-      toDo = function(cb, result) {drv.i2c1.writeByteSync(drv.address, DirectionSet, BothClockWise);cb()};
-    } else if (motors[MOTOR1].direction == 1 && motors[MOTOR2].direction == -1) {
-      toDo = function(cb) {drv.i2c1.writeByteSync(drv.address, DirectionSet, M1CWM2ACW);cb()};
-    } else if (motors[MOTOR1].direction == -1 && motors[MOTOR2].direction == 1) {
-      toDo = function(cb) {drv.i2c1.writeByteSync(drv.address, DirectionSet, M1ACWM2CW);cb()};
-    } else if (motors[MOTOR1].direction == -1 && motors[MOTOR2].direction == -1) {
-      toDo = function(cb) {drv.i2c1.writeByteSync(drv.address, DirectionSet, BothAntiClockWise);cb()};
-    }
-    async.retry({times: 3, interval: 200}, toDo, function(err, result) {
-      sleep.usleep(100000);
-    });
+    drv.setMotors(motors);
   };
 
   drv.set = function(channelNr, value){
@@ -115,7 +103,26 @@ function I2CMotorDriver( i2cAddress ){
   console.log('motors:',motors);
   drv.getMotors = function(){
     return motors;
-  }
+  };
+
+  drv.setMotors = function( newMotors ){
+    motors = newMotors;
+    var toDo;
+    if (motors[MOTOR1].direction == 1 && motors[MOTOR2].direction == 1) {
+      toDo = function(cb, result) {drv.i2c1.writeByteSync(drv.address, DirectionSet, BothClockWise);cb()};
+    } else if (motors[MOTOR1].direction == 1 && motors[MOTOR2].direction == -1) {
+      toDo = function(cb) {drv.i2c1.writeByteSync(drv.address, DirectionSet, M1CWM2ACW);cb()};
+    } else if (motors[MOTOR1].direction == -1 && motors[MOTOR2].direction == 1) {
+      toDo = function(cb) {drv.i2c1.writeByteSync(drv.address, DirectionSet, M1ACWM2CW);cb()};
+    } else if (motors[MOTOR1].direction == -1 && motors[MOTOR2].direction == -1) {
+      toDo = function(cb) {drv.i2c1.writeByteSync(drv.address, DirectionSet, BothAntiClockWise);cb()};
+    }
+    async.retry({times: 3, interval: 200}, toDo, function(err, result) {
+      sleep.usleep(100000);
+    });
+  };
+
+  drv.send = drv.setMotors;
 }
 
 I2CMotorDriver.prototype = new I2CSensor();
