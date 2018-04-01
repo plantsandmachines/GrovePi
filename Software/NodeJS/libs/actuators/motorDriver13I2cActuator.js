@@ -98,7 +98,10 @@ function I2CMotorDriver( i2cAddress ){
   };
 
   drv.set = function(channelNr, value){
-    if ( channelNr != MOTOR1 && channelNr != MOTOR2 ){
+    if ( typeof channelNr == 'object'){
+      drv.setMotors( channelNr );
+      return;
+    } else if ( channelNr != MOTOR1 && channelNr != MOTOR2 ){
       return;
     }
     motors[channelNr].speed = Math.max(0,Math.min(255,value));
