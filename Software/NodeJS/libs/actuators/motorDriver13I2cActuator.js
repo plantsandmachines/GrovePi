@@ -78,8 +78,23 @@ function I2CMotorDriver( i2cAddress ){
     } else if (motors[MOTOR1].direction == -1 && motors[MOTOR2].direction == -1) {
       toDo = function(cb) {drv.i2c1.writeByteSync(drv.address, DirectionSet, BothAntiClockWise);cb()};
     }
+    if (motors[MOTOR1].direction == 1 && motors[MOTOR2].direction == 1) {
+      toDo = function(cb, result) {drv.i2c1.writeWordSync(drv.address,MotorSpeedSet, motors[MOTOR2].speed * 256 + motors[MOTOR1].speed );cb()};
+    } else if (motors[MOTOR1].direction == 1 && motors[MOTOR2].direction == -1) {
+      toDo = function(cb) {drv.i2c1.writeByteSync(drv.address, DirectionSet, M1CWM2ACW);cb()};
+    } else if (motors[MOTOR1].direction == -1 && motors[MOTOR2].direction == 1) {
+      toDo = function(cb) {drv.i2c1.writeByteSync(drv.address, DirectionSet, M1ACWM2CW);cb()};
+    } else if (motors[MOTOR1].direction == -1 && motors[MOTOR2].direction == -1) {
+      toDo = function(cb) {drv.i2c1.writeByteSync(drv.address, DirectionSet, BothAntiClockWise);cb()};
+    }
     async.retry({times: 3, interval: 200}, toDo, function(err, result) {
-      sleep.usleep(100000);
+      //sleep.usleep(100000);
+      if ( motors[MOTOR1].speed !== undefined){
+        drv.set(MOTOR1,motors[MOTOR1].speed);
+      }
+      if ( motors[MOTOR2].speed !== undefined){
+        drv.set(MOTOR2,motors[MOTOR2].speed);
+      }
     });
   };
 
@@ -98,10 +113,7 @@ function I2CMotorDriver( i2cAddress ){
   };
 
   drv.set = function(channelNr, value){
-    if ( typeof channelNr == 'object'){
-      drv.setMotors( channelNr );
-      return;
-    } else if ( channelNr != MOTOR1 && channelNr != MOTOR2 ){
+    if ( channelNr != MOTOR1 && channelNr != MOTOR2 ){
       return;
     }
     motors[channelNr].speed = Math.max(0,Math.min(255,value));
