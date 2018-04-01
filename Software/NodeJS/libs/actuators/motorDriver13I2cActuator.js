@@ -155,7 +155,7 @@ function I2CMotorDriver( i2cAddress ){
   // reset everything
   drv.i2c1.writeByteSync(drv.address, DirectionSet, BothClockWise);
   sleep.usleep(100000);
-  drv.i2c1.writeWordSync(drv.address,MotorSpeedSet, newMotors[MOTOR2].speed * 256 + newMotors[MOTOR1].speed );
+  drv.i2c1.writeWordSync(drv.address,MotorSpeedSet, 0 );
   sleep.usleep(100000);
 }
 
