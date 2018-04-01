@@ -66,7 +66,6 @@ function I2CMotorDriver( i2cAddress ){
   //Hardware
 
   drv.setMotors = function( newMotors ){
-    motors = newMotors;
     console.log( 'setting motors!', newMotors);
     var toDo;
     if ( ( newMotors[MOTOR1].direction !== undefined && newMotors[MOTOR1].direction != motors[MOTOR1].direction) || (newMotors[MOTOR2].direction !== 'undefined' && newMotors[MOTOR2].direction != motors[MOTOR2].direction )){
