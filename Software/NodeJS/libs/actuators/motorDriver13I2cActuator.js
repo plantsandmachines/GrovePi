@@ -69,83 +69,100 @@ function I2CMotorDriver( i2cAddress ){
     motors = newMotors;
     console.log( 'setting motors!', newMotors);
     var toDo;
-    if (motors[MOTOR1].direction == 1 && motors[MOTOR2].direction == 1) {
-      toDo = function(cb, result) {drv.i2c1.writeByteSync(drv.address, DirectionSet, BothClockWise);cb()};
-    } else if (motors[MOTOR1].direction == 1 && motors[MOTOR2].direction == -1) {
-      toDo = function(cb) {drv.i2c1.writeByteSync(drv.address, DirectionSet, M1CWM2ACW);cb()};
-    } else if (motors[MOTOR1].direction == -1 && motors[MOTOR2].direction == 1) {
-      toDo = function(cb) {drv.i2c1.writeByteSync(drv.address, DirectionSet, M1ACWM2CW);cb()};
-    } else if (motors[MOTOR1].direction == -1 && motors[MOTOR2].direction == -1) {
-      toDo = function(cb) {drv.i2c1.writeByteSync(drv.address, DirectionSet, BothAntiClockWise);cb()};
+    if ( ( newMotors[MOTOR1].direction !== undefined && newMotors[MOTOR1].direction != motors[MOTOR1].direction) || (newMotors[MOTOR2].direction !== 'undefined' && newMotors[MOTOR2].direction != motors[MOTOR2].direction )){
+      if (newMotors[MOTOR1].direction == 1 && newMotors[MOTOR2].direction == 1) {
+        toDo = function(cb) {drv.i2c1.writeByteSync(drv.address, DirectionSet, BothClockWise);sleep.usleep(100000);cb()};
+      } else if (newMotors[MOTOR1].direction == 1 && newMotors[MOTOR2].direction == -1) {
+        toDo = function(cb) {drv.i2c1.writeByteSync(drv.address, DirectionSet, M1CWM2ACW);sleep.usleep(100000);cb()};
+      } else if (newMotors[MOTOR1].direction == -1 && newMotors[MOTOR2].direction == 1) {
+        toDo = function(cb) {drv.i2c1.writeByteSync(drv.address, DirectionSet, M1ACWM2CW);sleep.usleep(100000);cb()};
+      } else if (newMotors[MOTOR1].direction == -1 && newMotors[MOTOR2].direction == -1) {
+        toDo = function(cb) {drv.i2c1.writeByteSync(drv.address, DirectionSet, BothAntiClockWise);sleep.usleep(100000);cb()};
+      }
     }
-    if (motors[MOTOR1].direction == 1 && motors[MOTOR2].direction == 1) {
-      toDo = function(cb, result) {drv.i2c1.writeWordSync(drv.address,MotorSpeedSet, motors[MOTOR2].speed * 256 + motors[MOTOR1].speed );cb()};
-    } else if (motors[MOTOR1].direction == 1 && motors[MOTOR2].direction == -1) {
-      toDo = function(cb) {drv.i2c1.writeByteSync(drv.address, DirectionSet, M1CWM2ACW);cb()};
-    } else if (motors[MOTOR1].direction == -1 && motors[MOTOR2].direction == 1) {
-      toDo = function(cb) {drv.i2c1.writeByteSync(drv.address, DirectionSet, M1ACWM2CW);cb()};
-    } else if (motors[MOTOR1].direction == -1 && motors[MOTOR2].direction == -1) {
-      toDo = function(cb) {drv.i2c1.writeByteSync(drv.address, DirectionSet, BothAntiClockWise);cb()};
-    }
+    console.log('trying to set the direction of the motors.;');
     async.retry({times: 3, interval: 200}, toDo, function(err, result) {
-      //sleep.usleep(100000);
-      if ( motors[MOTOR1].speed !== undefined){
-        drv.set(MOTOR1,motors[MOTOR1].speed);
+
+      console.log('did set the direction of the motors.');
+      motors[MOTOR1].direction = newMotors[MOTOR1].direction;
+      motors[MOTOR2].direction = newMotors[MOTOR2].direction;
+
+      var setStuff = [];
+      if ( newMotors[MOTOR1].speed !== undefined && newMotors[MOTOR1].speed != motors[MOTOR1].speed ){
+        setStuff.push( function(cb){
+          drv.set(MOTOR1,newMotors[MOTOR1].speed, cb);
+        });
       }
-      if ( motors[MOTOR2].speed !== undefined){
-        drv.set(MOTOR2,motors[MOTOR2].speed);
+      if ( newMotors[MOTOR2].speed !== undefined && newMotors[MOTOR2].speed != motors[MOTOR2].speed ){
+        setStuff.push( function(cb){
+          drv.set(MOTOR2,newMotors[MOTOR2].speed, cb);
+        });
       }
+      console.log('trying to set the speed of the motors. things to set: ' + setStuff.length);
+      async.series(setStuff, function(){
+        console.log( 'did set motors');
+      })
     });
   };
 
-  drv.send = drv.setMotors;
+  
 
-  drv.setDirection = function(channelNr, direction) {
+  drv.setDirection = function(channelNr, direction, callback) {
     if ( channelNr != MOTOR1 && channelNr != MOTOR2 ){
       return;
     }
-
-    motors[channelNr].direction = direction;
-
     console.log(' got correct motor, actually publishing');
 
-    drv.setMotors(motors);
+    var newMotors = JSON.parse(JSON.stringify(motors));
+    newMotors[channelNr].direction = direction;
+    drv.setMotors(newMotors);
   };
 
-  drv.set = function(channelNr, value){
+  drv.set = function(channelNr, value, callback){
     if ( channelNr != MOTOR1 && channelNr != MOTOR2 ){
       return;
     }
-    motors[channelNr].speed = Math.max(0,Math.min(255,value));
+    var newMotors = JSON.parse(JSON.stringify(motors));
+    newMotors[channelNr].speed = Math.max(0,Math.min(255,value));
     console.log(' got correct motor, actually setting speed');
     var toDo =
       function (cb) {
         //shifts the motor2 value 2 characters to the left, sending a 4 character hexa value
-        drv.i2c1.writeWordSync(drv.address,MotorSpeedSet, motors[MOTOR2].speed * 256 + motors[MOTOR1].speed );
+        drv.i2c1.writeWordSync(drv.address,MotorSpeedSet, newMotors[MOTOR2].speed * 256 + newMotors[MOTOR1].speed );
+        sleep.usleep(100000);
         cb();
       };
 
 
     async.retry({times: 3, interval: 200}, toDo, function(err, result) {
-      sleep.usleep(100000);
+      motors[channelNr].speed = value;
+      if (callback !== undefined && typeof callback == 'function') {
+        callback();
+      }
     });
 
   };
 
-  drv.setDirection(MOTOR1,1);
-
-  console.log('motors:',motors);
   drv.getMotors = function(){
     return motors;
   };
 
 
+  // Function used by PaM Interface
+  drv.send = drv.setMotors;
+  drv.read = drv.getMotors;
+
+  // reset everything
+  drv.i2c1.writeByteSync(drv.address, DirectionSet, BothClockWise);
+  sleep.usleep(100000);
+  drv.i2c1.writeWordSync(drv.address,MotorSpeedSet, newMotors[MOTOR2].speed * 256 + newMotors[MOTOR1].speed );
+  sleep.usleep(100000);
 }
 
 I2CMotorDriver.prototype = new I2CSensor();
 
-I2CMotorDriver.prototype.read = function(){
-  return this.getMotors();
-};
+//I2CMotorDriver.prototype.read = function(){
+//  return this.getMotors();
+//};
 
 module.exports = I2CMotorDriver;
