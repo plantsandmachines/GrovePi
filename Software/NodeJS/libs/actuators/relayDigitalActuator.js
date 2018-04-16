@@ -31,4 +31,8 @@ RelayDigitalActuator.prototype.set = function ( enable ){
     return this.disable();
   }
 }
+
+// used by Pam Software
+RelayDigitalActuator.prototype.send = RelayDigitalActuator.prototype.set;
+
 module.exports = RelayDigitalActuator
