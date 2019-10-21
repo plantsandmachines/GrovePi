@@ -1,3 +1,6 @@
+# For PlatformIO extension
+.pio/
+
 # Windows image file caches
 Thumbs.db
 ehthumbs.db
@@ -54,3 +57,5 @@ Release
 
 # IntelliJ Files
 .idea
+Firmware/Source/grovepi/\.pioenvs/
+Firmware/Source/grovepi/\.vscode/
