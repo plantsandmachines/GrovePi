@@ -46,7 +46,6 @@ function I2CMotorDriver( i2cAddress ){
     drv.address = DRIVER_ADDR;
   }
   var busNumber;
-  drv.address = DRIVER_ADDR;
   var motors = {
     1: {speed: 0, direction: 1},
     2: {speed: 0, direction: 1}
