@@ -40,7 +40,6 @@ function I2CMotorDriver( i2cAddress ){
   drv.bus = null;
   // Bus Address from i2cdetect command
   if ( i2cAddress ){
-    console.log('i2cdriver got an address: '+i2cAddress);
     drv.address = parseInt(i2cAddress);
   } else {
     drv.address = DRIVER_ADDR;
