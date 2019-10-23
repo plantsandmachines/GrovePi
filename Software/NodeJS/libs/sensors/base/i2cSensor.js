@@ -1,6 +1,7 @@
 var util         = require('util')
 var Sensor       = require('./sensor')
 var commands     = require('../../commands')
+var fs = require('fs');
 
 const i2c0Path  = '/dev/i2c-0';
 const i2c1Path  = '/dev/i2c-1';

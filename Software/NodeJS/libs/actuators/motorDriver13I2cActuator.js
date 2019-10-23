@@ -1,6 +1,4 @@
 //var GrovePi = require('node-grovepi').GrovePi;
-var fs = require('fs');
-
 var sleep = require('sleep');
 var I2CSensor = require('../sensors/base/i2cSensor');
 var async = require('async');
