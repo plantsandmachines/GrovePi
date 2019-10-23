@@ -39,7 +39,7 @@ function I2CMotorDriver( i2cAddress ){
     drv.address = DRIVER_ADDR;
   }
 
-  drv.i2c1 = drv.getBus();
+  drv.i2c1 = drv.prototype.getBus();
 
   //Hardware
   var motors = {
