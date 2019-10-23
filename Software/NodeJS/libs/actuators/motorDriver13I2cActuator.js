@@ -171,13 +171,23 @@ function I2CMotorDriver( i2cAddress ){
   // Function used by PaM Interface
   drv.send = drv.setMotors;
   drv.read = drv.getMotors;
-  drv.i2c1 = i2cBus.openSync(busNumber);
+
   // reset everything
-  drv.i2c1.writeByteSync(drv.address, DirectionSet, BothClockWise);
-  sleep.usleep(100000);
-  drv.i2c1.writeWordSync(drv.address,MotorSpeedSet, 0 );
-  sleep.usleep(100000);
-  drv.i2c1.closeSync();
+
+  var reset = [function(cb){
+    drv.i2c1 = i2cBus.openSync(busNumber);
+    drv.i2c1.writeByteSync(drv.address, DirectionSet, BothClockWise);
+    sleep.usleep(100000);
+    drv.i2c1.writeWordSync(drv.address,MotorSpeedSet, 0 );
+    sleep.usleep(100000);
+    drv.i2c1.closeSync();
+  }];
+
+  async.retry({times: 3, interval: 300}, reset, function(err, result) {
+
+    console.log(' reset board at address '+ drv.address);
+  });
+
 }
 
 I2CMotorDriver.prototype = new I2CSensor();
