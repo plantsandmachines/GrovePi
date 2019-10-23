@@ -1,8 +1,14 @@
 //var GrovePi = require('node-grovepi').GrovePi;
+var fs = require('fs');
+
 var sleep = require('sleep');
 var I2CSensor = require('../sensors/base/i2cSensor');
 var async = require('async');
 const DRIVER_ADDR = 0x0f;
+
+const i2c0Path  = '/dev/i2c-0';
+const i2c1Path  = '/dev/i2c-1';
+const i2c2Path  = '/dev/i2c-2';
 
 /******I2C command definitions*************/
 const MotorSpeedSet   = 0x82;
@@ -24,7 +30,7 @@ const MOTOR2 =  2;
 
 
 function I2CMotorDriver( i2cAddress ){
-
+  var i2cBus = require('i2c-bus');
 
   var drv = this;
   I2CSensor.apply(drv,Array.prototype.slice.call(arguments));
@@ -38,16 +44,29 @@ function I2CMotorDriver( i2cAddress ){
   } else {
     drv.address = DRIVER_ADDR;
   }
-
-  drv.i2c1 = drv.prototype.getBus();
-
-  //Hardware
+  var busNumber;
   var motors = {
     1: {speed: 0, direction: 1},
     2: {speed: 0, direction: 1}
   };
+
+  if (fs.existsSync(i2c0Path)) {
+    busNumber = 0
+  } else if (fs.existsSync(i2c1Path)) {
+    busNumber = 1
+  } else if (fs.existsSync(i2c2Path)) {
+    busNumber = 2
+  } else {
+    var err = console.log('ERR: Could not determine your i2c device')
+  }
+
+
+
+  //Hardware
+
   drv.setMotors = function( newMotors ){
     console.log( 'setting motors!', newMotors);
+    drv.i2c1 = i2cBus.openSync(busNumber);
     var toDo;
     if ( ( newMotors[MOTOR1].direction !== undefined && newMotors[MOTOR1].direction != motors[MOTOR1].direction) || (newMotors[MOTOR2].direction !== 'undefined' && newMotors[MOTOR2].direction != motors[MOTOR2].direction )){
       if (newMotors[MOTOR1].direction == 1 && newMotors[MOTOR2].direction == 1) {
@@ -81,9 +100,11 @@ function I2CMotorDriver( i2cAddress ){
           });
         }
         console.log('trying to set the speed of the motors. things to set: ' + setStuff.length);
+
         async.series(setStuff, function(){
           console.log( 'did set motors');
         })
+
       });
     } else {
       var setStuff = [];
@@ -102,7 +123,7 @@ function I2CMotorDriver( i2cAddress ){
         console.log( 'did set motors');
       })
     }
-
+    drv.i2c1.closeSync();
   };
 
   drv.setDirection = function(channelNr, direction, callback) {
@@ -117,6 +138,7 @@ function I2CMotorDriver( i2cAddress ){
   };
 
   drv.set = function(channelNr, value, callback){
+    drv.i2c1 = i2cBus.openSync(busNumber);
     if ( channelNr != MOTOR1 && channelNr != MOTOR2 ){
       return;
     }
@@ -138,7 +160,7 @@ function I2CMotorDriver( i2cAddress ){
         callback();
       }
     });
-
+    drv.i2c1.closeSync();
   };
 
   drv.getMotors = function(){
@@ -149,22 +171,19 @@ function I2CMotorDriver( i2cAddress ){
   // Function used by PaM Interface
   drv.send = drv.setMotors;
   drv.read = drv.getMotors;
-
+  drv.i2c1 = i2cBus.openSync(busNumber);
   // reset everything
   drv.i2c1.writeByteSync(drv.address, DirectionSet, BothClockWise);
   sleep.usleep(100000);
   drv.i2c1.writeWordSync(drv.address,MotorSpeedSet, 0 );
   sleep.usleep(100000);
+  drv.i2c1.closeSync();
 }
 
 I2CMotorDriver.prototype = new I2CSensor();
-
 
 //I2CMotorDriver.prototype.read = function(){
 //  return this.getMotors();
 //};
 
 module.exports = I2CMotorDriver;
-
-
-
