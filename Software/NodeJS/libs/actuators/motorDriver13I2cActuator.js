@@ -6,10 +6,6 @@ var I2CSensor = require('../sensors/base/i2cSensor');
 var async = require('async');
 const DRIVER_ADDR = 0x0f;
 
-const i2c0Path  = '/dev/i2c-0';
-const i2c1Path  = '/dev/i2c-1';
-const i2c2Path  = '/dev/i2c-2';
-
 /******I2C command definitions*************/
 const MotorSpeedSet   = 0x82;
 const PWMFrequenceSet = 0x84;
@@ -47,7 +43,7 @@ function I2CMotorDriver( i2cAddress ){
 
   var driver = new I2CDriver();
 
-  drv.i2c1 = driver.getBus();
+  drv.i2c1 = drv.getBus();
 
   //Hardware
   var motors = {
@@ -167,34 +163,6 @@ function I2CMotorDriver( i2cAddress ){
 
 I2CMotorDriver.prototype = new I2CSensor();
 
-
-function I2CDriver () {
-
-  if (arguments.callee._singletonInstance) {
-    return arguments.callee._singletonInstance;
-  }
-
-  arguments.callee._singletonInstance = this;
-
-  var i2cBus = require('i2c-bus');
-  var busNumber;
-
-
-  if (fs.existsSync(i2c0Path)) {
-    busNumber = 0
-  } else if (fs.existsSync(i2c1Path)) {
-    busNumber = 1
-  } else if (fs.existsSync(i2c2Path)) {
-    busNumber = 2
-  } else {
-    var err = console.log('ERR: Could not determine your i2c device')
-  }
-
-  var bus = i2cBus.openSync(busNumber);
-  this.getBus = function () {
-    return bus;
-  };
-}
 
 //I2CMotorDriver.prototype.read = function(){
 //  return this.getMotors();
