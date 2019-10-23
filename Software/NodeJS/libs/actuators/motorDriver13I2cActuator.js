@@ -174,14 +174,14 @@ function I2CMotorDriver( i2cAddress ){
 
   // reset everything
 
-  var reset = [function(cb){
+  var reset = function(cb){
     drv.i2c1 = i2cBus.openSync(busNumber);
     drv.i2c1.writeByteSync(drv.address, DirectionSet, BothClockWise);
     sleep.usleep(100000);
     drv.i2c1.writeWordSync(drv.address,MotorSpeedSet, 0 );
     sleep.usleep(100000);
     drv.i2c1.closeSync();
-  }];
+  };
 
   async.retry({times: 3, interval: 300}, reset, function(err, result) {
 
