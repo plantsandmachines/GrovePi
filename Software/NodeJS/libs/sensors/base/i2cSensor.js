@@ -41,7 +41,7 @@ function I2CDriver () {
     return bus;
   };
 }
-I2cSensor.prototype.bus = I2CDriver().getBus();
+I2cSensor.prototype.bus = new I2CDriver().getBus();
 
 
 module.exports = I2cSensor
