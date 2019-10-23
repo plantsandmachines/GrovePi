@@ -14,7 +14,6 @@ function I2cSensor() {
 util.inherits(I2cSensor, Sensor)
 I2cSensor.prototype = new I2cSensor()
 
-
 function I2CDriver () {
 
   if (arguments.callee._singletonInstance) {
@@ -42,7 +41,7 @@ function I2CDriver () {
     return bus;
   };
 }
-I2cSensor.prototype.bus = new I2CDriver().getBus();
+I2cSensor.prototype.bus = I2CDriver().getBus();
 
 
 module.exports = I2cSensor
