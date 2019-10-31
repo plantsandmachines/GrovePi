@@ -69,78 +69,78 @@ function I2CMotorDriver( i2cAddress ){
     i2cBus.openPromisified(busNumber).then(function(i2c1) {
 
       drv.i2c1 = i2c1;
-      var toDo;
+      //var toDo;
       if (( newMotors[MOTOR1].direction !== undefined && newMotors[MOTOR1].direction != motors[MOTOR1].direction) || (newMotors[MOTOR2].direction !== 'undefined' && newMotors[MOTOR2].direction != motors[MOTOR2].direction )) {
         if (newMotors[MOTOR1].direction == 1 && newMotors[MOTOR2].direction == 1) {
-          toDo = function (cb) {
+          //toDo = function (cb) {
             drv.i2c1.writeByte(drv.address, DirectionSet, BothClockWise);
             //sleep.usleep(100000);
-            cb()
-          };
+            //cb()
+          //};
         } else if (newMotors[MOTOR1].direction == 1 && newMotors[MOTOR2].direction == -1) {
-          toDo = function (cb) {
+          //toDo = function (cb) {
             drv.i2c1.writeByte(drv.address, DirectionSet, M1CWM2ACW);
             //sleep.usleep(100000);
-            cb()
-          };
+            //cb()
+          //};
         } else if (newMotors[MOTOR1].direction == -1 && newMotors[MOTOR2].direction == 1) {
-          toDo = function (cb) {
+          //toDo = function (cb) {
             drv.i2c1.writeByte(drv.address, DirectionSet, M1ACWM2CW);
             //sleep.usleep(100000);
-            cb()
-          };
+            //cb()
+          //};
         } else if (newMotors[MOTOR1].direction == -1 && newMotors[MOTOR2].direction == -1) {
-          toDo = function (cb) {
+          //toDo = function (cb) {
             drv.i2c1.writeByte(drv.address, DirectionSet, BothAntiClockWise);
             //sleep.usleep(100000);
-            cb()
-          };
+            //cb()
+          //};
         }
       }
 
-      if (toDo !== undefined) {
+      //if (toDo !== undefined) {
         console.log('trying to set the direction of the motors.;');
-        async.retry({times: 3, interval: 200}, toDo, function (err, result) {
+        //async.retry({times: 3, interval: 200}, toDo, function (err, result) {
 
           console.log('did set the direction of the motors.');
           motors[MOTOR1].direction = newMotors[MOTOR1].direction;
           motors[MOTOR2].direction = newMotors[MOTOR2].direction;
 
-          var setStuff = [];
+          //var setStuff = [];
           if (newMotors[MOTOR1].speed !== undefined && newMotors[MOTOR1].speed != motors[MOTOR1].speed) {
-            setStuff.push(function (cb) {
-              drv.set(MOTOR1, newMotors[MOTOR1].speed, cb);
-            });
+            //setStuff.push(function (cb) {
+              drv.set(MOTOR1, newMotors[MOTOR1].speed);
+            //});
           }
           if (newMotors[MOTOR2].speed !== undefined && newMotors[MOTOR2].speed != motors[MOTOR2].speed) {
-            setStuff.push(function (cb) {
-              drv.set(MOTOR2, newMotors[MOTOR2].speed, cb);
-            });
+            //setStuff.push(function (cb) {
+              drv.set(MOTOR2, newMotors[MOTOR2].speed);
+            //});
           }
           console.log('trying to set the speed of the motors. things to set: ' + setStuff.length);
 
-          async.series(setStuff, function () {
-            console.log('did set motors');
-          })
+          //async.series(setStuff, function () {
+          //  console.log('did set motors');
+          //})
 
-        });
-      } else {
-        var setStuff = [];
-        if (newMotors[MOTOR1].speed !== undefined && newMotors[MOTOR1].speed != motors[MOTOR1].speed) {
-          setStuff.push(function (cb) {
-            drv.set(MOTOR1, newMotors[MOTOR1].speed, cb);
-          });
-        }
-        if (newMotors[MOTOR2].speed !== undefined && newMotors[MOTOR2].speed != motors[MOTOR2].speed) {
-          setStuff.push(function (cb) {
-            drv.set(MOTOR2, newMotors[MOTOR2].speed, cb);
-          });
-        }
-        console.log('trying to set the speed of the motors. things to set: ' + setStuff.length);
-        async.series(setStuff, function () {
-          console.log('did set motors');
-        })
-      }
+        //});
+      //} else {
+      //  var setStuff = [];
+      //  if (newMotors[MOTOR1].speed !== undefined && newMotors[MOTOR1].speed != motors[MOTOR1].speed) {
+      //    setStuff.push(function (cb) {
+      //      drv.set(MOTOR1, newMotors[MOTOR1].speed, cb);
+      //    });
+      //  }
+      //  if (newMotors[MOTOR2].speed !== undefined && newMotors[MOTOR2].speed != motors[MOTOR2].speed) {
+      //    setStuff.push(function (cb) {
+      //      drv.set(MOTOR2, newMotors[MOTOR2].speed, cb);
+      //    });
+      //  }
+      //  console.log('trying to set the speed of the motors. things to set: ' + setStuff.length);
+      //  async.series(setStuff, function () {
+      //    console.log('did set motors');
+      //  })
+      //}
     }).then(function(){
       drv.i2c1.close();
     }).catch(function(err){
