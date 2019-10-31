@@ -209,7 +209,7 @@ function I2CMotorDriver( i2cAddress ){
         drv.i2c1.writeWord(drv.address, MotorSpeedSet, 0);
         //sleep.usleep(100000);
       }).then(function(){
-        drv.i2c1.closeSync();
+        drv.i2c1.close();
         cb();
       })
     } catch (e){
