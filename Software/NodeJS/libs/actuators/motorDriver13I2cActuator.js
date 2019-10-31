@@ -201,13 +201,17 @@ function I2CMotorDriver( i2cAddress ){
 
   var reset = function(cb){
     try {
-      drv.i2c1 = i2cBus.openSync(busNumber);
-      drv.i2c1.writeByteSync(drv.address, DirectionSet, BothClockWise);
-      sleep.usleep(100000);
-      drv.i2c1.writeWordSync(drv.address,MotorSpeedSet, 0 );
-      sleep.usleep(100000);
-      drv.i2c1.closeSync();
-      cb();
+      i2cBus.openPromisified(busNumber).then(function(i2c1) {
+
+        drv.i2c1 = i2c1;
+        drv.i2c1.writeByte(drv.address, DirectionSet, BothClockWise);
+        //sleep.usleep(100000);
+        drv.i2c1.writeWord(drv.address, MotorSpeedSet, 0);
+        //sleep.usleep(100000);
+      }).then(function(){
+        drv.i2c1.closeSync();
+        cb();
+      })
     } catch (e){
       cb(e);
     }
