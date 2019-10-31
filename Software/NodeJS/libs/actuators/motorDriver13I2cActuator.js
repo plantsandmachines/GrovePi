@@ -143,6 +143,8 @@ function I2CMotorDriver( i2cAddress ){
       }
     }).then(function(){
       drv.i2c1.close();
+    }).catch(function(err){
+      console.log(' cought error on setMotors:',err);
     })
 
   };
@@ -169,20 +171,21 @@ function I2CMotorDriver( i2cAddress ){
       console.log(' got correct motor and a bus, actually setting speed');
       var newMotors = JSON.parse(JSON.stringify(motors));
       newMotors[channelNr].speed = Math.max(0, Math.min(255, value));
-      var toDo =
-        function (cb) {
-          //shifts the motor2 value 2 characters to the left, sending a 4 character hexa value
-          drv.i2c1.writeWord(drv.address, MotorSpeedSet, newMotors[MOTOR2].speed * 256 + newMotors[MOTOR1].speed);
-          cb();
-        };
-
-
-      async.retry({times: 3, interval: 200}, toDo, function (err, result) {
-        motors[channelNr].speed = value;
-        if (callback !== undefined && typeof callback == 'function') {
-          callback();
-        }
-      })
+    drv.i2c1.writeWord(drv.address, MotorSpeedSet, newMotors[MOTOR2].speed * 256 + newMotors[MOTOR1].speed);
+      //var toDo =
+      //  function (cb) {
+      //    //shifts the motor2 value 2 characters to the left, sending a 4 character hexa value
+      //    drv.i2c1.writeWord(drv.address, MotorSpeedSet, newMotors[MOTOR2].speed * 256 + newMotors[MOTOR1].speed);
+      //    cb();
+      //  };
+      //
+      //
+      //async.retry({times: 3, interval: 200}, toDo, function (err, result) {
+      //  motors[channelNr].speed = value;
+      //  if (callback !== undefined && typeof callback == 'function') {
+      //    callback();
+      //  }
+      //})
     //}).then(function(){
     //    drv.i2c1.close();
     //});
@@ -211,6 +214,8 @@ function I2CMotorDriver( i2cAddress ){
       }).then(function(){
         drv.i2c1.close();
         cb();
+      }).catch(function(err){
+        console.log(' cought error on reset:',err);
       })
     } catch (e){
       cb(e);
