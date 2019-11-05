@@ -106,21 +106,21 @@ function I2CMotorDriver( i2cAddress ){
 
         //async.retry({times: 3, interval: 200}, toDo, function (err, result) {
 
-          console.log('did set the direction of the motors.');
-          motors[MOTOR1].direction = newMotors[MOTOR1].direction;
-          motors[MOTOR2].direction = newMotors[MOTOR2].direction;
+      console.log('did set the direction of the motors.');
+      motors[MOTOR1].direction = newMotors[MOTOR1].direction;
+      motors[MOTOR2].direction = newMotors[MOTOR2].direction;
 
-          //var setStuff = [];
-          if (newMotors[MOTOR1].speed !== undefined && newMotors[MOTOR1].speed != motors[MOTOR1].speed) {
-            //setStuff.push(function (cb) {
-              drv.set(MOTOR1, newMotors[MOTOR1].speed);
-            //});
-          }
-          if (newMotors[MOTOR2].speed !== undefined && newMotors[MOTOR2].speed != motors[MOTOR2].speed) {
-            //setStuff.push(function (cb) {
-              drv.set(MOTOR2, newMotors[MOTOR2].speed);
-            //});
-          }
+      //var setStuff = [];
+      if (newMotors[MOTOR1].speed !== undefined && newMotors[MOTOR1].speed != motors[MOTOR1].speed) {
+        //setStuff.push(function (cb) {
+          drv.set(MOTOR1, newMotors[MOTOR1].speed);
+        //});
+      }
+      if (newMotors[MOTOR2].speed !== undefined && newMotors[MOTOR2].speed != motors[MOTOR2].speed) {
+        //setStuff.push(function (cb) {
+          drv.set(MOTOR2, newMotors[MOTOR2].speed);
+        //});
+      }
           //console.log('trying to set the speed of the motors. things to set: ' + setStuff.length);
 
           //async.series(setStuff, function () {
@@ -209,34 +209,28 @@ function I2CMotorDriver( i2cAddress ){
 
   // reset everything
 
-  var reset = function(cb){
-    try {
-      i2cBus.openPromisified(busNumber).then(function(i2c1) {
+  var reset = function(){
+    i2cBus.openPromisified(busNumber).catch(function(err){
+      console.log(' cought error on open bus for reset at'+drv.address,err);
+    }).then(function(i2c1) {
+      drv.i2c1 = i2c1;
+      drv.i2c1.writeByte(drv.address, DirectionSet, BothClockWise);
+      //sleep.usleep(100000);
 
-        drv.i2c1 = i2c1;
-        drv.i2c1.writeByte(drv.address, DirectionSet, BothClockWise);
-        //sleep.usleep(100000);
-        drv.i2c1.writeWord(drv.address, MotorSpeedSet, 0);
-        //sleep.usleep(100000);
-      }).catch(function(err){
-        console.log(' cought error on reset:',err);
-      }).then(function(){
-        drv.i2c1.close();
-        cb();
-      }).catch(function(err){
-        console.log(' cought error close after reset:',err);
-      })
-    } catch (e){
-      cb(e);
-    }
-
+      //sleep.usleep(100000);
+    }).catch(function(err){
+      console.log(' cought error on reset direction: '+drv.address,err);
+    }).then(function(){
+      drv.i2c1.writeWord(drv.address, MotorSpeedSet, 0);
+    }).catch(function(err){
+      console.log(' cought error on reset speed '+ drv.address,err);
+    }).then(function(){
+      drv.i2c1.close();
+    }).catch(function(err){
+      console.log(' cought error close after reset:'+ drv.address,err);
+    })
   };
-
-  async.retry({times: 3, interval: 300}, reset, function(err, result) {
-
-    console.log(' reset board at address '+ drv.address);
-  });
-
+  console.log(' reset board at address '+ drv.address);
 }
 
 I2CMotorDriver.prototype = new I2CSensor();
