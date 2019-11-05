@@ -141,6 +141,8 @@ function I2CMotorDriver( i2cAddress ){
       //    console.log('did set motors');
       //  })
       //}
+    }).catch(function(err){
+      console.log(' cought error on open bus for '+drv.address,err);
     }).then(function(){
       drv.i2c1.close();
     }).catch(function(err){
@@ -211,11 +213,13 @@ function I2CMotorDriver( i2cAddress ){
         //sleep.usleep(100000);
         drv.i2c1.writeWord(drv.address, MotorSpeedSet, 0);
         //sleep.usleep(100000);
+      }).catch(function(err){
+        console.log(' cought error on reset:',err);
       }).then(function(){
         drv.i2c1.close();
         cb();
       }).catch(function(err){
-        console.log(' cought error on reset:',err);
+        console.log(' cought error close after reset:',err);
       })
     } catch (e){
       cb(e);
