@@ -145,11 +145,11 @@ function I2CMotorDriver( i2cAddress ){
       //    console.log('did set motors');
       //  })
       //}
-    }).catch(function(err){
+    },function(err){
       console.log(' cought error on open bus for '+drv.address,err);
     }).then(function(){
       drv.i2c1.close();
-    }).catch(function(err){
+    },function(err){
       console.log(' cought error on setMotors:',err);
     })
 
@@ -210,23 +210,21 @@ function I2CMotorDriver( i2cAddress ){
   // reset everything
 
   var reset = function(){
-    i2cBus.openPromisified(busNumber).catch(function(err){
-      console.log(' cought error on open bus for reset at'+drv.address,err);
-    }).then(function(i2c1) {
+    i2cBus.openPromisified(busNumber).then(function(i2c1) {
       drv.i2c1 = i2c1;
       drv.i2c1.writeByte(drv.address, DirectionSet, BothClockWise);
       //sleep.usleep(100000);
 
       //sleep.usleep(100000);
-    }).catch(function(err){
-      console.log(' cought error on reset direction: '+drv.address,err);
+    },function(err){
+      console.log(' cought error on open bus for reset at'+drv.address,err);
     }).then(function(){
       drv.i2c1.writeWord(drv.address, MotorSpeedSet, 0);
-    }).catch(function(err){
+    },function(err){
       console.log(' cought error on reset speed '+ drv.address,err);
     }).then(function(){
       drv.i2c1.close();
-    }).catch(function(err){
+    },function(err){
       console.log(' cought error close after reset:'+ drv.address,err);
     })
   };
