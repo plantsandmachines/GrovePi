@@ -117,7 +117,7 @@ function I2CMotorDriver( i2cAddress ){
               drv.set(MOTOR2, newMotors[MOTOR2].speed);
             //});
           }
-          console.log('trying to set the speed of the motors. things to set: ' + setStuff.length);
+          //console.log('trying to set the speed of the motors. things to set: ' + setStuff.length);
 
           //async.series(setStuff, function () {
           //  console.log('did set motors');
