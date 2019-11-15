@@ -84,47 +84,19 @@ function I2CMotorDriver(i2cAddress) {
         }
       }
 
-      //if (toDo !== undefined) {
-
-      //async.retry({times: 3, interval: 200}, toDo, function (err, result) {
-
       console.log('did set the direction of the motors.');
       motors[MOTOR1].direction = newMotors[MOTOR1].direction;
       motors[MOTOR2].direction = newMotors[MOTOR2].direction;
 
       //var setStuff = [];
-      if (newMotors[MOTOR1].speed !== undefined && newMotors[MOTOR1].speed != motors[MOTOR1].speed) {
+      if (newMotors[MOTOR1].speed !== undefined && newMotors[MOTOR1].speed !== motors[MOTOR1].speed) {
         drv.set(MOTOR1, newMotors[MOTOR1].speed);
         motors[MOTOR1].speed = newMotors[MOTOR1].speed;
       }
-      if (newMotors[MOTOR2].speed !== undefined && newMotors[MOTOR2].speed != motors[MOTOR2].speed) {
+      if (newMotors[MOTOR2].speed !== undefined && newMotors[MOTOR2].speed !== motors[MOTOR2].speed) {
         drv.set(MOTOR2, newMotors[MOTOR2].speed);
-        motors[MOTOR1].speed = newMotors[MOTOR1].speed;
+        motors[MOTOR2].speed = newMotors[MOTOR2].speed;
       }
-      //console.log('trying to set the speed of the motors. things to set: ' + setStuff.length);
-
-      //async.series(setStuff, function () {
-      //  console.log('did set motors');
-      //})
-
-      //});
-      //} else {
-      //  var setStuff = [];
-      //  if (newMotors[MOTOR1].speed !== undefined && newMotors[MOTOR1].speed != motors[MOTOR1].speed) {
-      //    setStuff.push(function (cb) {
-      //      drv.set(MOTOR1, newMotors[MOTOR1].speed, cb);
-      //    });
-      //  }
-      //  if (newMotors[MOTOR2].speed !== undefined && newMotors[MOTOR2].speed != motors[MOTOR2].speed) {
-      //    setStuff.push(function (cb) {
-      //      drv.set(MOTOR2, newMotors[MOTOR2].speed, cb);
-      //    });
-      //  }
-      //  console.log('trying to set the speed of the motors. things to set: ' + setStuff.length);
-      //  async.series(setStuff, function () {
-      //    console.log('did set motors');
-      //  })
-      //}
     }, function (err) {
       console.log(' cought error on open bus for ' + drv.address, err);
     }).then(function () {
@@ -191,9 +163,5 @@ function I2CMotorDriver(i2cAddress) {
 }
 
 I2CMotorDriver.prototype = new I2CSensor();
-
-//I2CMotorDriver.prototype.read = function(){
-//  return this.getMotors();
-//};
 
 module.exports = I2CMotorDriver;
