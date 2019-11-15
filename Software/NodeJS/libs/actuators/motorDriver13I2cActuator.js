@@ -1,7 +1,7 @@
 //var GrovePi = require('node-grovepi').GrovePi;
 var fs = require('fs');
 
-var sleep = require('sleep');
+//var sleep = require('sleep');
 var I2CSensor = require('../sensors/base/i2cSensor');
 var async = require('async');
 const DRIVER_ADDR = 0x0f;
@@ -75,28 +75,28 @@ function I2CMotorDriver( i2cAddress ){
           //toDo = function (cb) {
           console.log(' got correct motor, actually publishing direction change BothClockWise');
             drv.i2c1.writeByte(drv.address, DirectionSet, BothClockWise);
-            sleep.usleep(100000);
+            //sleep.usleep(100000);
             //cb()
           //};
         } else if (newMotors[MOTOR1].direction == 1 && newMotors[MOTOR2].direction == -1) {
           //toDo = function (cb) {
           console.log(' got correct motor, actually publishing direction change M1CWM2ACW');
             drv.i2c1.writeByte(drv.address, DirectionSet, M1CWM2ACW);
-            sleep.usleep(100000);
+            //sleep.usleep(100000);
             //cb()
           //};
         } else if (newMotors[MOTOR1].direction == -1 && newMotors[MOTOR2].direction == 1) {
           //toDo = function (cb) {
           console.log(' got correct motor, actually publishing direction change M1ACWM2CW');
             drv.i2c1.writeByte(drv.address, DirectionSet, M1ACWM2CW);
-            sleep.usleep(100000);
+            //sleep.usleep(100000);
             //cb()
           //};
         } else if (newMotors[MOTOR1].direction == -1 && newMotors[MOTOR2].direction == -1) {
           //toDo = function (cb) {
           console.log(' got correct motor, actually publishing direction change BothAntiClockWise');
             drv.i2c1.writeByte(drv.address, DirectionSet, BothAntiClockWise);
-            sleep.usleep(100000);
+            //sleep.usleep(100000);
             //cb()
           //};
         }
@@ -114,6 +114,7 @@ function I2CMotorDriver( i2cAddress ){
       if (newMotors[MOTOR1].speed !== undefined && newMotors[MOTOR1].speed != motors[MOTOR1].speed) {
         //setStuff.push(function (cb) {
           drv.set(MOTOR1, newMotors[MOTOR1].speed);
+        //sleep.usleep(100000);
         //});
       }
       if (newMotors[MOTOR2].speed !== undefined && newMotors[MOTOR2].speed != motors[MOTOR2].speed) {
@@ -178,7 +179,7 @@ function I2CMotorDriver( i2cAddress ){
       var newMotors = JSON.parse(JSON.stringify(motors));
       newMotors[channelNr].speed = Math.max(0, Math.min(255, value));
       drv.i2c1.writeWord(drv.address, MotorSpeedSet, newMotors[MOTOR2].speed * 256 + newMotors[MOTOR1].speed);
-      sleep.usleep(100000);
+      //sleep.usleep(100000);
       //var toDo =
       //  function (cb) {
       //    //shifts the motor2 value 2 characters to the left, sending a 4 character hexa value
