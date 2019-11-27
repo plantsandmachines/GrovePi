@@ -67,7 +67,6 @@ function I2CMotorDriver(i2cAddress) {
     i2cBus.openPromisified(busNumber).then(function (i2c1) {
 
       drv.i2c1 = i2c1;
-      //var toDo;
       if (( newMotors[MOTOR1].direction !== undefined && newMotors[MOTOR1].direction != motors[MOTOR1].direction) || (newMotors[MOTOR2].direction !== 'undefined' && newMotors[MOTOR2].direction != motors[MOTOR2].direction )) {
         if (newMotors[MOTOR1].direction == 1 && newMotors[MOTOR2].direction == 1) {
           console.log(' got correct motor, actually publishing direction change BothClockWise');
@@ -160,6 +159,8 @@ function I2CMotorDriver(i2cAddress) {
     })
   };
   console.log(' reset board at address ' + drv.address);
+
+  reset();
 }
 
 I2CMotorDriver.prototype = new I2CSensor();
