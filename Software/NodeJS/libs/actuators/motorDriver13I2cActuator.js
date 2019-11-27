@@ -154,6 +154,10 @@ function I2CMotorDriver(i2cAddress) {
       console.log(' cought error on reset speed ' + drv.address, err);
     }).then(function () {
       drv.i2c1.close();
+      motors = {
+        1: {speed: 0, direction: 1},
+        2: {speed: 0, direction: 1}
+      };
     }, function (err) {
       console.log(' cought error close after reset:' + drv.address, err);
     })
