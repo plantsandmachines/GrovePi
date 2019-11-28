@@ -56,11 +56,14 @@ DHTDigitalSensor.CELSIUS = 'c'
 DHTDigitalSensor.FAHRENHEIT = 'f'
 
 DHTDigitalSensor.prototype.read = function() {
+  console.log('writing dht11 dht_temp')
   var write = this.board.writeBytes(commands.dht_temp.concat([this.pin, this.moduleType, commands.unused]))
   if (write) {
     this.board.wait(500)
+    console.log('reading byte from DHT11')
     this.board.readByte()
     this.board.wait(200)
+    console.log('reading 9 bytes from DHT11');
     var bytes = this.board.readBytes(9)
     if (bytes instanceof Buffer) {
       var hex
