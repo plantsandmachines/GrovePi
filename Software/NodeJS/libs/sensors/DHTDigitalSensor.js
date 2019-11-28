@@ -63,9 +63,10 @@ DHTDigitalSensor.prototype.read = function() {
     console.log('reading byte from DHT11')
     this.board.readByte()
     this.board.wait(200)
-    console.log('reading 9 bytes from DHT11');
+    console.log('reading 9 bytes from DHT11')
     var bytes = this.board.readBytes(9)
     if (bytes instanceof Buffer) {
+      console.log('got a buffer from DHT11')
       var hex
       var tempBytes = bytes.slice(1, 5).reverse()
       var humBytes = bytes.slice(5, 9).reverse()
@@ -84,6 +85,7 @@ DHTDigitalSensor.prototype.read = function() {
       var heatIndex = +(Number(parseFloat(getHeatIndex(temp, hum, this.scale)).toFixed(2)))
       // From: https://github.com/adafruit/DHT-sensor-library/blob/master/DHT.cpp
       // sanity check
+      console.log('temp: '+temp + ' hum: '+hum);
       if ( temp > 1000 || hum > 1000 || hum < 0){
         return false;
       }
